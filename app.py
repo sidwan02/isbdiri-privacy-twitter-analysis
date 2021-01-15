@@ -52,8 +52,8 @@ app.layout = html.Div([
                 id='date_picker',
                 # min_date_allowed=date(2020, 8, 1),
                 # max_date_allowed=date(2020, 12, 31),
-                start_date=date(2020, 1, 1),
-                end_date=date(2022, 1, 1),
+                start_date=date(2021, 1, 1),
+                end_date=date(2021, 1, 14),
                 # style={"margin-top": "15px"}
             ),
             dcc.Dropdown(
