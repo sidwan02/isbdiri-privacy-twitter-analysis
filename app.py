@@ -39,6 +39,8 @@ encoded_image = base64.b64encode(open(image_filename, 'rb').read())
 
 server = app.server
 
+app.title = 'Privacy Twitter Analysis'
+
 app.layout = html.Div([
     html.Div([
         html.H1('Twitter Privacy Analysis'),
