@@ -191,8 +191,8 @@ def update_graph_central_tendency(start_date, end_date, data_selection, tweets_s
     if companies_selection == None:
         companies_selection = []
     # print('yo')
-    start_date_obj = datetime.strptime(start_date, '%Y-%m-%d')
-    end_date_obj = datetime.strptime(end_date, '%Y-%m-%d')
+    start_date_obj = datetime.strptime(start_date, '%Y %m %d')
+    end_date_obj = datetime.strptime(end_date, '%Y %m %d')
 
     # https://stackoverflow.com/questions/59882714/python-generating-a-list-of-dates-between-two-dates
     # https://stackoverflow.com/questions/18684076/how-to-create-a-list-of-date-string-in-yyyymmdd-format-with-python-pandas
