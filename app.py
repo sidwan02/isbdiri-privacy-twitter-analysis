@@ -200,7 +200,7 @@ def update_graph_central_tendency(start_date, end_date, data_selection, tweets_s
         start_date_obj, end_date_obj-timedelta(days=1), freq='d')]
 
     if data_selection == 'full':
-        df = pd.read_csv('./results/consolidated.csv')
+        df = pd.read_csv('results/consolidated.csv')
     elif data_selection == 'trending_retweets':
         df = filter_by_col('retweet_count', thresh)
     elif data_selection == 'trending_favs':
@@ -566,9 +566,9 @@ def update_graph_organizations(start_date, end_date, mode_selection, analysis_se
         start_date_obj, end_date_obj-timedelta(days=1), freq='d')]
     # print('date_range', date_range)
 
-    # df = pd.read_csv('./results/consolidated.csv')
+    # df = pd.read_csv('results/consolidated.csv')
     if data_selection == 'full':
-        df = pd.read_csv('./results/consolidated.csv')
+        df = pd.read_csv('results/consolidated.csv')
     elif data_selection == 'trending_retweets':
         df = filter_by_col('retweet_count', thresh)
     elif data_selection == 'trending_favs':
@@ -841,8 +841,8 @@ def update_graph_organizations(start_date, end_date, mode_selection, analysis_se
         sum_df['count'] = count_arr
 
         if (analysis_selection == 'overall'):
-            ig = px.bar(sum_df, x="hashtag", y="count",
-                        color="date", )
+            fig = px.bar(sum_df, x="hashtag", y="count",
+                         color="date", )
 
             fig.update_layout(
                 plot_bgcolor=colors['background'],
@@ -888,7 +888,7 @@ def update_org_selection_options(choice_tweets):
     if choice_tweets == 'tweets_all':
         return []
     elif choice_tweets == 'tweets_orgs':
-        df = pd.read_csv('./results/consolidated.csv')
+        df = pd.read_csv('results/consolidated.csv')
         orgs_list = [ast.literal_eval(orgs)
                      for orgs in df['tweet_mentioned_organizations']]
         # print('orgs_list', orgs_list)

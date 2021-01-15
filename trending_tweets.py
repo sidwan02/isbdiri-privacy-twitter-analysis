@@ -11,8 +11,7 @@ import math
 
 
 def filter_by_col(col_name, thresh):
-    df = pd.read_csv(
-        r'C:\Users\sidwa\OneDrive\OneDriveNew\Personal\Sid\Brown University\Internships\ISB\DIRI DS\privacy_data_sentiment_analysis\results\consolidated.csv', index_col=0)
+    df = pd.read_csv('results\consolidated.csv', index_col=0)
 
     # retweet = df['retweet_count']
     # fav = df['fav_count']
