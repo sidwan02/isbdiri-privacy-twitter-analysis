@@ -11,7 +11,7 @@ import math
 
 
 def filter_by_col(col_name, thresh):
-    df = pd.read_csv('results\consolidated.csv', index_col=0)
+    df = pd.read_csv('results/consolidated.csv', index_col=0)
 
     # retweet = df['retweet_count']
     # fav = df['fav_count']
