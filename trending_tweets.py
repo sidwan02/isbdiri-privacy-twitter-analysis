@@ -12,7 +12,7 @@ import numpy as np
 
 
 def filter_by_col(col_name, thresh):
-    df = pd.read_csv('results/consolidated.csv', index_col=0)
+    df = pd.read_csv('results/consolidated_date_formatted.csv', index_col=0)
     # print('df1', df1)
 
     # retweet = df['retweet_count']

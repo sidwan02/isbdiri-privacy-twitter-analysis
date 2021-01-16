@@ -210,16 +210,16 @@ def update_graph_central_tendency(start_date, end_date, data_selection, tweets_s
         start_date_obj, end_date_obj-timedelta(days=1), freq='d')]
 
     if data_selection == 'full':
-        df = pd.read_csv('results/consolidated.csv')
+        df = pd.read_csv('results/consolidated_date_formatted.csv')
     elif data_selection == 'trending_retweets':
         df = filter_by_col('retweet_count', thresh)
     elif data_selection == 'trending_favs':
         df = filter_by_col('fav_count', thresh)
 
-    
-
     # # https://stackoverflow.com/questions/12096252/use-a-list-of-values-to-select-rows-from-a-pandas-dataframe
     # print('df_date', df['date'])
+
+    print('all dates', df.date.unique())
 
     df = df[df['date'].isin(date_range)]
     # print('date_range', date_range)
@@ -579,15 +579,14 @@ def update_graph_organizations(start_date, end_date, mode_selection, analysis_se
         start_date_obj, end_date_obj-timedelta(days=1), freq='d')]
     # print('date_range', date_range)
 
-    # df = pd.read_csv('results/consolidated.csv')
+    # df = pd.read_csv('results/consolidated_date_formatted.csv')
     if data_selection == 'full':
-        df = pd.read_csv('results/consolidated.csv')
+        df = pd.read_csv('results/consolidated_date_formatted.csv')
     elif data_selection == 'trending_retweets':
         df = filter_by_col('retweet_count', thresh)
     elif data_selection == 'trending_favs':
         df = filter_by_col('fav_count', thresh)
 
-    
     df = df[df['date'].isin(date_range)]
 
     # print('df', df)
@@ -912,9 +911,7 @@ def update_org_selection_options(choice_tweets):
     if choice_tweets == 'tweets_all':
         return []
     elif choice_tweets == 'tweets_orgs':
-        df = pd.read_csv('results/consolidated.csv')
-
-        
+        df = pd.read_csv('results/consolidated_date_formatted.csv')
 
         orgs_list = [ast.literal_eval(orgs)
                      for orgs in df['tweet_mentioned_organizations']]
