@@ -371,94 +371,55 @@ def update_graph_central_tendency(start_date, end_date, data_selection, tweets_s
 
                 return fig
     elif analysis_selection == 'overall':
-        if centric_selection == 'date_centric':
+        if tweets_selection == 'tweets_all':
+            count_arr = [1] * len(df.index)
+            df['count'] = count_arr
+            if (tendency_selection == 'retweets'):
 
-            # print('df', df)
+                fig = px.histogram(df, x="retweet_count", y="count",
+                                   color="date", marginal='rug', hover_data=['vader_polarity'], nbins=20, )
 
-            # fig = px.strip(df, x="date", y="retweet_count", )
+                fig.update_layout(
+                    plot_bgcolor=colors['background'],
+                    paper_bgcolor=colors['background'],
+                    font_color=colors['text']
+                )
 
-            # return 'hi'
-            if analysis_selection == 'progressive':
-                if (tendency_selection == 'retweets'):
+                return fig
 
-                    fig = px.strip(df, x="date", y="retweet_count",
-                                   )
+            elif (tendency_selection == 'favs'):
 
-                    fig.update_layout(
-                        plot_bgcolor=colors['background'],
-                        paper_bgcolor=colors['background'],
-                        font_color=colors['text']
-                    )
+                fig = px.histogram(df, x="fav_count", y="count",
+                                   color="date", marginal='rug', hover_data=['vader_polarity'], nbins=20, )
 
-                    # https://www.codegrepper.com/code-examples/python/how+to+find+mean+of+one+column+based+on+another+column+in+python
-                    mean_sr = df.groupby('date')['retweet_count'].mean()
-                    mean_df = pd.DataFrame(
-                        {'date': mean_sr.index, 'retweet_count': mean_sr.values})
+                fig.update_layout(
+                    plot_bgcolor=colors['background'],
+                    paper_bgcolor=colors['background'],
+                    font_color=colors['text']
+                )
 
-                    median_sr = df.groupby('date')['retweet_count'].median()
-                    median_df = pd.DataFrame(
-                        {'date': median_sr.index, 'retweet_count': median_sr.values})
+                return fig
 
-                    # https://stackoverflow.com/questions/62122015/how-to-add-traces-in-plotly-express
-                    fig.add_trace(go.Scatter(
-                        x=mean_df['date'], y=mean_df['retweet_count'], name='mean'))
-                    fig.add_trace(go.Scatter(
-                        x=median_df['date'], y=median_df['retweet_count'], name='median'))
+            elif (tendency_selection == 'sentiment'):
+                fig = px.histogram(df, x="vader_polarity", y="count",
+                                   color="date", marginal='rug', hover_data=['tweet_mentioned_organizations'], nbins=20, )
 
-                    return fig
+                fig.update_layout(
+                    plot_bgcolor=colors['background'],
+                    paper_bgcolor=colors['background'],
+                    font_color=colors['text']
+                )
 
-                elif (tendency_selection == 'favs'):
+                return fig
+        elif tweets_selection == 'tweets_orgs':
+            if centric_selection == 'date_centric':
 
-                    fig = px.strip(df, x="date", y="fav_count",
-                                   )
+                # print('df', df)
 
-                    fig.update_layout(
-                        plot_bgcolor=colors['background'],
-                        paper_bgcolor=colors['background'],
-                        font_color=colors['text']
-                    )
+                # fig = px.strip(df, x="date", y="retweet_count", )
 
-                    mean_sr = df.groupby('date')['fav_count'].mean()
-                    mean_df = pd.DataFrame(
-                        {'date': mean_sr.index, 'fav_count': mean_sr.values})
+                # return 'hi'
 
-                    median_sr = df.groupby('date')['fav_count'].median()
-                    median_df = pd.DataFrame(
-                        {'date': median_sr.index, 'fav_count': median_sr.values})
-
-                    fig.add_trace(go.Scatter(
-                        x=mean_df['date'], y=mean_df['fav_count'], name='mean'))
-                    fig.add_trace(go.Scatter(
-                        x=median_df['date'], y=median_df['fav_count'], name='median'))
-
-                    return fig
-
-                elif (tendency_selection == 'sentiment'):
-                    fig = px.strip(df, x="date", y="vader_polarity",
-                                   )
-
-                    fig.update_layout(
-                        plot_bgcolor=colors['background'],
-                        paper_bgcolor=colors['background'],
-                        font_color=colors['text']
-                    )
-
-                    mean_sr = df.groupby(
-                        'date')['vader_polarity'].mean()
-                    mean_df = pd.DataFrame(
-                        {'date': mean_sr.index, 'vader_polarity': mean_sr.values})
-
-                    median_sr = df.groupby('date')['vader_polarity'].median()
-                    median_df = pd.DataFrame(
-                        {'date': median_sr.index, 'vader_polarity': median_sr.values})
-
-                    fig.add_trace(go.Scatter(
-                        x=mean_df['date'], y=mean_df['vader_polarity'], name='mean'))
-                    fig.add_trace(go.Scatter(
-                        x=median_df['date'], y=median_df['vader_polarity'], name='median'))
-
-                    return fig
-            elif analysis_selection == 'overall':
                 count_arr = [1] * len(df.index)
                 df['count'] = count_arr
                 if (tendency_selection == 'retweets'):
@@ -498,63 +459,63 @@ def update_graph_central_tendency(start_date, end_date, data_selection, tweets_s
                     )
 
                     return fig
-        elif centric_selection == 'org_centric':
+            elif centric_selection == 'org_centric':
 
-            orgs_literal = list(map(lambda x: ast.literal_eval(
-                x), df['tweet_mentioned_organizations'].to_numpy()))
+                orgs_literal = list(map(lambda x: ast.literal_eval(
+                    x), df['tweet_mentioned_organizations'].to_numpy()))
 
-            # print(orgs_literal)
+                # print(orgs_literal)
 
-            df['display_orgs'] = list(map(
-                lambda x: functools.reduce(lambda a, b: a + ', ' + b, x), orgs_literal))
+                df['display_orgs'] = list(map(
+                    lambda x: functools.reduce(lambda a, b: a + ', ' + b, x), orgs_literal))
 
-            # print('after filtering the companies selected', df)
+                # print('after filtering the companies selected', df)
 
-            # print('df', df)
+                # print('df', df)
 
-            # fig = px.strip(df, x="date", y="retweet_count", )
+                # fig = px.strip(df, x="date", y="retweet_count", )
 
-            # return 'hi'
-            if analysis_selection == 'overall':
-                count_arr = [1] * len(df.index)
-                df['count'] = count_arr
-                if (tendency_selection == 'retweets'):
+                # return 'hi'
+                if analysis_selection == 'overall':
+                    count_arr = [1] * len(df.index)
+                    df['count'] = count_arr
+                    if (tendency_selection == 'retweets'):
 
-                    fig = px.histogram(df, x="retweet_count", y="count",
-                                       color="display_orgs", marginal='rug', hover_data=['date', 'fav_count'], nbins=20, )
+                        fig = px.histogram(df, x="retweet_count", y="count",
+                                           color="display_orgs", marginal='rug', hover_data=['date', 'fav_count'], nbins=20, )
 
-                    fig.update_layout(
-                        plot_bgcolor=colors['background'],
-                        paper_bgcolor=colors['background'],
-                        font_color=colors['text']
-                    )
+                        fig.update_layout(
+                            plot_bgcolor=colors['background'],
+                            paper_bgcolor=colors['background'],
+                            font_color=colors['text']
+                        )
 
-                    return fig
+                        return fig
 
-                elif (tendency_selection == 'favs'):
+                    elif (tendency_selection == 'favs'):
 
-                    fig = px.histogram(df, x="fav_count", y="count",
-                                       color="display_orgs", marginal='rug', hover_data=['date', 'retweet_count', 'vader_polarity'], nbins=20, )
+                        fig = px.histogram(df, x="fav_count", y="count",
+                                           color="display_orgs", marginal='rug', hover_data=['date', 'retweet_count', 'vader_polarity'], nbins=20, )
 
-                    fig.update_layout(
-                        plot_bgcolor=colors['background'],
-                        paper_bgcolor=colors['background'],
-                        font_color=colors['text']
-                    )
+                        fig.update_layout(
+                            plot_bgcolor=colors['background'],
+                            paper_bgcolor=colors['background'],
+                            font_color=colors['text']
+                        )
 
-                    return fig
+                        return fig
 
-                elif (tendency_selection == 'sentiment'):
-                    fig = px.histogram(df, x="vader_polarity", y="count",
-                                       color="display_orgs", marginal='rug', hover_data=['date', 'retweet_count', 'fav_count'], nbins=20, )
+                    elif (tendency_selection == 'sentiment'):
+                        fig = px.histogram(df, x="vader_polarity", y="count",
+                                           color="display_orgs", marginal='rug', hover_data=['date', 'retweet_count', 'fav_count'], nbins=20, )
 
-                    fig.update_layout(
-                        plot_bgcolor=colors['background'],
-                        paper_bgcolor=colors['background'],
-                        font_color=colors['text']
-                    )
+                        fig.update_layout(
+                            plot_bgcolor=colors['background'],
+                            paper_bgcolor=colors['background'],
+                            font_color=colors['text']
+                        )
 
-                    return fig
+                        return fig
 
 
 @ app.callback(
