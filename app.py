@@ -76,6 +76,16 @@ app.layout = html.Div([
                 placeholder='Enter a threshold',
                 style={"margin-top": "15px"}
             ),
+            dcc.Dropdown(
+                id='choice_analysis',
+                options=[
+                    {'label': 'Progressive', 'value': 'progressive'},
+                    {'label': 'Overall', 'value': 'overall'},
+                ],
+                value='progressive',
+                clearable=False,
+                style={"margin-top": "15px"}
+            ),
         ], style={'width': '40%', 'align-items': 'center', 'justify-content': 'center', 'padding': '20px', 'background-color': '#f7f7f7',   'border-radius': '5px', 'box-shadow': '2px 2px 2px lightgrey'
                   }),
         html.Div([
@@ -93,16 +103,6 @@ app.layout = html.Div([
                 dcc.Dropdown(
                     id='choice_orgs_selection',
                     multi=True,
-                    style={"margin-top": "15px"}
-                ),
-                dcc.Dropdown(
-                    id='choice_analysis',
-                    options=[
-                        {'label': 'Progressive', 'value': 'progressive'},
-                        {'label': 'Overall', 'value': 'overall'},
-                    ],
-                    value='progressive',
-                    clearable=False,
                     style={"margin-top": "15px"}
                 ),
                 dcc.Dropdown(
@@ -155,7 +155,15 @@ app.layout = html.Div([
                 ),
                 dcc.Input(
                     id='choice_max_x',
-                    type='number'
+                    type='number',
+                    value=10,
+                    placeholder='Enter Max Displayed'
+                ),
+                dcc.Input(
+                    id='choice_min_count',
+                    type='number',
+                    value=1,
+                    placeholder='Enter Min Frequency'
                 ),
 
             ], style={'width': '40%', 'align-items': 'center', 'justify-content': 'center', 'padding': '20px', 'background-color': '#f7f7f7',   'border-radius': '5px', 'box-shadow': '2px 2px 2px lightgrey'
@@ -189,7 +197,7 @@ app.layout = html.Div([
      dash.dependencies.Input('choice_orgs_selection', 'value')],
 )
 def update_graph_central_tendency(start_date, end_date, data_selection, tweets_selection, tendency_selection, analysis_selection, thresh, centric_selection, companies_selection):
-    print('companies_selection', companies_selection)
+    # print('companies_selection', companies_selection)
     if companies_selection == None:
         companies_selection = []
     # print('yo')
@@ -207,6 +215,8 @@ def update_graph_central_tendency(start_date, end_date, data_selection, tweets_s
         df = filter_by_col('retweet_count', thresh)
     elif data_selection == 'trending_favs':
         df = filter_by_col('fav_count', thresh)
+
+    
 
     # # https://stackoverflow.com/questions/12096252/use-a-list-of-values-to-select-rows-from-a-pandas-dataframe
     # print('df_date', df['date'])
@@ -493,12 +503,12 @@ def update_graph_central_tendency(start_date, end_date, data_selection, tweets_s
             orgs_literal = list(map(lambda x: ast.literal_eval(
                 x), df['tweet_mentioned_organizations'].to_numpy()))
 
-            print(orgs_literal)
+            # print(orgs_literal)
 
             df['display_orgs'] = list(map(
                 lambda x: functools.reduce(lambda a, b: a + ', ' + b, x), orgs_literal))
 
-            print('after filtering the companies selected', df)
+            # print('after filtering the companies selected', df)
 
             # print('df', df)
 
@@ -556,9 +566,10 @@ def update_graph_central_tendency(start_date, end_date, data_selection, tweets_s
      dash.dependencies.Input('choice_organizations', 'value'),
      dash.dependencies.Input('choice_consolidated_trending', 'value'),
      dash.dependencies.Input('choice_trending_thresh', 'value'),
-     dash.dependencies.Input('choice_max_x', 'value')])
-def update_graph_organizations(start_date, end_date, mode_selection, analysis_selection, organizations_selection, data_selection, thresh, max_x):
-    print('hi')
+     dash.dependencies.Input('choice_max_x', 'value'),
+     dash.dependencies.Input('choice_min_count', 'value')])
+def update_graph_organizations(start_date, end_date, mode_selection, analysis_selection, organizations_selection, data_selection, thresh, max_x, min_count):
+    # print('hi')
     start_date_obj = datetime.strptime(start_date, '%Y-%m-%d')
     end_date_obj = datetime.strptime(end_date, '%Y-%m-%d')
 
@@ -576,12 +587,13 @@ def update_graph_organizations(start_date, end_date, mode_selection, analysis_se
     elif data_selection == 'trending_favs':
         df = filter_by_col('fav_count', thresh)
 
+    
     df = df[df['date'].isin(date_range)]
 
     # print('df', df)
 
     if organizations_selection == 'organizations':
-        print('organizations!')
+        # print('organizations!')
 
         # create a 2D array with Organization references having their own row
         indiv_org_ref_arr = []
@@ -623,7 +635,7 @@ def update_graph_organizations(start_date, end_date, mode_selection, analysis_se
         sum_sr = indiv_org_ref_df.groupby(
             ['date', 'organization'])['count'].sum()
 
-        print(sum_sr)
+        # print(sum_sr)
 
         sum_df = pd.DataFrame()
 
@@ -653,6 +665,9 @@ def update_graph_organizations(start_date, end_date, mode_selection, analysis_se
         sum_df['organization'] = org_arr
         sum_df['count'] = count_arr
 
+        sum_df = sum_df[sum_df['count'] > min_count]
+        print('sum_df', sum_df)
+
         if (analysis_selection == 'overall'):
             fig = px.bar(sum_df, x="organization", y="count",
                          color="date", )
@@ -669,7 +684,7 @@ def update_graph_organizations(start_date, end_date, mode_selection, analysis_se
 
             return fig
         elif (analysis_selection == 'progressive'):
-            print('progressive!')
+            # print('progressive!')
 
             # print('indiv_org_ref_df', indiv_org_ref_df)
 
@@ -710,7 +725,7 @@ def update_graph_organizations(start_date, end_date, mode_selection, analysis_se
         sum_sr = indiv_tags_df.groupby(
             ['date', 'tag'])['count'].sum()
 
-        print(sum_sr)
+        # print(sum_sr)
 
         sum_df = pd.DataFrame()
 
@@ -740,6 +755,8 @@ def update_graph_organizations(start_date, end_date, mode_selection, analysis_se
         sum_df['tag'] = tag_arr
         sum_df['count'] = count_arr
 
+        sum_df = sum_df[sum_df['count'] > min_count]
+
         if (analysis_selection == 'overall'):
             fig = px.bar(sum_df, x="tag", y="count",
                          color="date", )
@@ -768,12 +785,13 @@ def update_graph_organizations(start_date, end_date, mode_selection, analysis_se
 
             return fig
     elif organizations_selection == 'hashtags':
-        print('hashtags!')
+        # print('hashtags!')
 
         # create a 2D array with Organization references having their own row
         indiv_hashtag_ref_arr = []
 
-        for _, row in df.iterrows():
+        for index, row in df.iterrows():
+            print(index)
             # https://stackoverflow.com/questions/23119472/in-pandas-python-reading-array-stored-as-string
             # to_csv makes arrays of strings string so need to extract the array back
             # print('row tings', row['hashtags'])
@@ -807,12 +825,12 @@ def update_graph_organizations(start_date, end_date, mode_selection, analysis_se
         indiv_hashtag_ref_df = pd.DataFrame(
             indiv_hashtag_ref_arr, columns=['date', 'hashtag', 'sentiment', 'count'])
 
-        print('indiv_hashtag_ref_df: ', indiv_hashtag_ref_df)
+        # print('indiv_hashtag_ref_df: ', indiv_hashtag_ref_df)
 
         sum_sr = indiv_hashtag_ref_df.groupby(
             ['date', 'hashtag'])['count'].sum()
-
-        print(sum_sr)
+        print('done with sr')
+        # print(sum_sr)
 
         sum_df = pd.DataFrame()
 
@@ -831,6 +849,7 @@ def update_graph_organizations(start_date, end_date, mode_selection, analysis_se
         count_arr = []
 
         for i in range(0, sum_sr.size):
+            print(i)
             index = sum_sr.index[i]
             value = sum_sr.values[i]
 
@@ -841,6 +860,8 @@ def update_graph_organizations(start_date, end_date, mode_selection, analysis_se
         sum_df['date'] = date_arr
         sum_df['hashtag'] = hashtag_arr
         sum_df['count'] = count_arr
+
+        sum_df = sum_df[sum_df['count'] > min_count]
 
         if (analysis_selection == 'overall'):
             fig = px.bar(sum_df, x="hashtag", y="count",
@@ -859,6 +880,7 @@ def update_graph_organizations(start_date, end_date, mode_selection, analysis_se
             return fig
         elif (analysis_selection == 'progressive'):
             print('progressive!')
+
             fig = px.bar(sum_df, x="date", y="count",
                          color="hashtag", )
 
@@ -886,18 +908,23 @@ def update_org_centric_input_visibility(choice_tweets):
     dash.dependencies.Output('choice_orgs_selection', 'options'),
     [dash.dependencies.Input('choice_all_tweets', 'value')])
 def update_org_selection_options(choice_tweets):
-    print('updating!', choice_tweets)
+    # print('updating!', choice_tweets)
     if choice_tweets == 'tweets_all':
         return []
     elif choice_tweets == 'tweets_orgs':
         df = pd.read_csv('results/consolidated.csv')
+
+        
+
         orgs_list = [ast.literal_eval(orgs)
                      for orgs in df['tweet_mentioned_organizations']]
-        # print('orgs_list', orgs_list)
+        print('orgs_list', orgs_list)
+
+        orgs = []
 
         orgs = np.unique(
             np.array(functools.reduce(lambda a, b: a + b, orgs_list)))
-        print('orgs', orgs)
+        # print('orgs', orgs)
         return [{'label': org, 'value': org} for org in orgs]
 
 
@@ -906,7 +933,7 @@ def update_org_selection_options(choice_tweets):
     [dash.dependencies.Input('choice_all_tweets', 'value'),
      dash.dependencies.Input('choice_orgs_selection', 'options')])
 def update_org_dafault_selection(choice_tweets, org_options):
-    print('updating!', choice_tweets)
+    # print('updating!', choice_tweets)
     if choice_tweets == 'tweets_all':
         return []
     elif choice_tweets == 'tweets_orgs':
@@ -934,16 +961,28 @@ def update_max_x_input_visibility(analysis_selection):
         return {'display': 'block'}
 
 
-@ app.callback(
-    dash.dependencies.Output('choice_max_x', 'placeholder'),
-    [dash.dependencies.Input('choice_organizations', 'value')])
-def update_placeholder_text(organizations_selection):
-    if organizations_selection == 'organizations':
-        return 'Enter Max Organizations'
-    elif organizations_selection == 'tags':
-        return 'Enter Max Tags'
-    elif organizations_selection == 'hashtags':
-        return 'Enter Max Hashtags'
+# @ app.callback(
+#     dash.dependencies.Output('choice_max_x', 'placeholder'),
+#     [dash.dependencies.Input('choice_organizations', 'value')])
+# def update_max_x_placeholder_text(organizations_selection):
+#     if organizations_selection == 'organizations':
+#         return 'Enter Max Organizations'
+#     elif organizations_selection == 'tags':
+#         return 'Enter Max Tags'
+#     elif organizations_selection == 'hashtags':
+#         return 'Enter Max Hashtags'
+
+
+# @ app.callback(
+#     dash.dependencies.Output('choice_min_count', 'placeholder'),
+#     [dash.dependencies.Input('choice_organizations', 'value')])
+# def update_min_count_placeholder_text(organizations_selection):
+#     if organizations_selection == 'organizations':
+#         return 'Enter Min Organization Frequency'
+#     elif organizations_selection == 'tags':
+#         return 'Enter Min Tag Frequency'
+#     elif organizations_selection == 'hashtags':
+#         return 'Enter Min Hashtag Frequency'
 
 
 @ app.callback(

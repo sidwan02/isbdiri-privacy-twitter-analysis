@@ -1,5 +1,6 @@
 import pandas as pd
 import math
+import numpy as np
 
 # thresh = input(
 #     "Enter threshold [Valid input: 'mean' | 'median' | <Any number> ]: ")
@@ -12,18 +13,21 @@ import math
 
 def filter_by_col(col_name, thresh):
     df = pd.read_csv('results/consolidated.csv', index_col=0)
+    # print('df1', df1)
 
     # retweet = df['retweet_count']
     # fav = df['fav_count']
+    # print('thresh', thresh)
 
     col = df[col_name]
+    # print('col', list(col))
     if thresh == 'mean':
         tot = sum(list(col))
         mean = tot/len(col)
-        print('mean', mean)
+        # print('mean', mean)
 
         df_sorted = df.sort_values(col_name, ascending=False)
-        print('df_sorted', df_sorted)
+        # print('df_sorted', df_sorted)
         return df_sorted.loc[df_sorted[col_name] >= mean]
     elif thresh == 'median':
         median = 0
