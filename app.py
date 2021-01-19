@@ -1185,7 +1185,7 @@ def update_graph_organizations(start_date, end_date, mode_selection, analysis_se
                 opacity=1.0,
                 layer="below",
                 # sizing="stretch",
-                source="https://raw.githubusercontent.com/sidwan02/isbdiri-privacy-twitter-analysis/main/DIRI.png?token=AQ3LMOL3HJSDFBZAYCC6IFDAB4QDK")
+                source="https://raw.githubusercontent.com/sidwan02/isbdiri-privacy-twitter-analysis/main/results/phrases_cloud.png?token=AQ3LMOJZNGN2KT5CHVZ6PMTAB6D5W")
             # src="results/phrases_cloud.png")
         )
 
