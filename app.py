@@ -56,8 +56,8 @@ app.layout = html.Div([
                 id='date_picker',
                 # min_date_allowed=date(2020, 8, 1),
                 # max_date_allowed=date(2020, 12, 31),
-                start_date=date(2021, 1, 1),
-                end_date=date(2021, 1, 14),
+                start_date=date(2021, 1, 8),
+                end_date=date(2021, 1, 30),
                 # style={"margin-top": "15px"}
             ),
             dcc.Dropdown(
@@ -197,31 +197,61 @@ app.layout = html.Div([
 
 
 def diverge_sentiment(df, color_col_name):
-    df['vader_polarity'] = np.where(
-        df['vader_polarity'] < 0.7, -1, 1)
+    if color_col_name == 'display_orgs & date':
+        df['vader_polarity'] = np.where(
+            df['vader_polarity'] < 0.7, -1, 1)
 
-    df['count'] = [1] * len(df.index)
+        df['count'] = [1] * len(df.index)
 
-    sum_sr = df.groupby(
-        [color_col_name, 'vader_polarity'])['count'].sum()
-    sum_df = pd.DataFrame()
+        sum_sr = df.groupby(
+            ['date', 'display_orgs', 'vader_polarity'])['count'].sum()
+        sum_df = pd.DataFrame()
 
-    color_col_arr = []
-    vader_arr = []
-    count_arr = []
+        date_arr = []
+        orgs_arr = []
+        vader_arr = []
+        count_arr = []
 
-    for i in range(0, sum_sr.size):
-        index = sum_sr.index[i]
-        value = sum_sr.values[i]
-        # print('index', index)
-        # print('value', value)
-        color_col_arr.append(index[0])
-        vader_arr.append(index[1])
-        count_arr.append(value)
+        for i in range(0, sum_sr.size):
+            index = sum_sr.index[i]
+            value = sum_sr.values[i]
+            # print('index', index)
+            # print('value', value)
+            date_arr.append(index[0])
+            orgs_arr.append(index[1])
+            vader_arr.append(index[2])
+            count_arr.append(value)
 
-    sum_df[color_col_name] = color_col_arr
-    sum_df['vader_polarity'] = vader_arr
-    sum_df['count'] = count_arr
+        sum_df['date'] = date_arr
+        sum_df['display_orgs'] = orgs_arr
+        sum_df['vader_polarity'] = vader_arr
+        sum_df['count'] = count_arr
+    else:
+        df['vader_polarity'] = np.where(
+            df['vader_polarity'] < 0.7, -1, 1)
+
+        df['count'] = [1] * len(df.index)
+
+        sum_sr = df.groupby(
+            [color_col_name, 'vader_polarity'])['count'].sum()
+        sum_df = pd.DataFrame()
+
+        color_col_arr = []
+        vader_arr = []
+        count_arr = []
+
+        for i in range(0, sum_sr.size):
+            index = sum_sr.index[i]
+            value = sum_sr.values[i]
+            # print('index', index)
+            # print('value', value)
+            color_col_arr.append(index[0])
+            vader_arr.append(index[1])
+            count_arr.append(value)
+
+        sum_df[color_col_name] = color_col_arr
+        sum_df['vader_polarity'] = vader_arr
+        sum_df['count'] = count_arr
 
     return sum_df
 
@@ -521,6 +551,8 @@ def update_graph_central_tendency(start_date, end_date, data_selection, tweets_s
                 df['display_orgs'] = list(map(
                     lambda x: functools.reduce(lambda a, b: a + ', ' + b, x), orgs_literal))
 
+                print('FINALLYFINALLY', df['display_orgs'])
+
                 if (tendency_selection == 'Retweets'):
                     print('hi retweets')
 
@@ -577,12 +609,12 @@ def update_graph_central_tendency(start_date, end_date, data_selection, tweets_s
                     return fig
 
                 elif (tendency_selection == 'Sentiment'):
-                    df = diverge_sentiment(df, 'date')
+                    df = diverge_sentiment(df, 'display_orgs & date')
 
                     # print('df gleeeeeeeeeeee', sum_df)
 
                     fig = px.bar(df, x="date", y="count",
-                                 color="display_orgs")
+                                 color="vader_polarity", text="display_orgs")
 
                     fig.update_layout(
                         plot_bgcolor=colors['background'],
