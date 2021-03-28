@@ -4,4 +4,3 @@ venv
 .env
 twitter_scrape_keys.py
 CSV/
-results/
